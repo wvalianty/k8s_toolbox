@@ -76,6 +76,7 @@ do
   if cat $configfile |shyaml get-value clusters.${n}|grep -q "name: ${cluster_name}";then
     clusters_certificate_authority_data=$(cat $configfile |shyaml get-value clusters.${n}.cluster.certificate-authority-data)
     server=$(cat $configfile |shyaml get-value clusters.${n}.cluster.server)
+    break
   else
     if [ $i -eq $cluster_n ];then
       echo "no corresponding cluster in your configfile or your configfile format not in standard"
@@ -91,6 +92,7 @@ do
   if cat $configfile |shyaml get-value users.${n}|grep -q "name: ${user_name}";then
     user_certificate_authority_data=$(cat $configfile |shyaml get-value users.${n}.user.client-certificate-data)
     client_key_data=$(cat $configfile |shyaml get-value users.${n}.user.client-key-data)
+    break
   else
     if [ $i -eq $users_n ]; then
       echo "no corresponding user in your configfile or your configfile format not in standard"
