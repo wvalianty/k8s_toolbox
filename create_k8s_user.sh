@@ -9,7 +9,7 @@
 
 set -e
 set -o pipefail
-if [ ! -f ca.crt ] && [ ! -f ca.key ];then
+if [ ! -f ca.crt ] || [ ! -f ca.key ];then
 	echo "no ca files"
 	exit 1
 fi
@@ -41,7 +41,7 @@ openssl genrsa -out ${certificate_name}.key 2048
 openssl req -new -key "${certificate_name}.key" -out ${certificate_name}.csr -subj "/CN=${user_name}/O=bitnami"
 openssl x509 -req -in ${certificate_name}.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out ${certificate_name}.crt -days 500
 kubectl config set-credentials ${user_name} --embed-certs=true --client-certificate=${certificate_name}.crt  --client-key=${certificate_name}.key
-kubectl config set-context ${user_name}-context --cluster=${cluster_name} --namespace=${namespace} --user=${user}
+kubectl config set-context ${user_name}-context --cluster=${cluster_name} --namespace=${namespace} --user=${user_name}
 
 cluster_n=$(cat $configfile |shyaml get-length clusters)
 for i in `seq 1 $cluster_n`
@@ -117,5 +117,5 @@ EOF
 kubectl create -f ./role.yaml
 kubectl create -f ./rolebinding.yaml
 echo "please follow the bellow command to use the new configfile\n"
-echo "unset KUBECONFIG && export KUBECONFIG=$KUBECONFIG:./config.result"
+echo "unset KUBECONFIG && export KUBECONFIG=./config.result"
 
